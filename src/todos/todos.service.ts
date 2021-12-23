@@ -26,8 +26,7 @@ export class TodosService {
     return this.data.find((todo) => todo.id === Number(id));
   }
   updateTodo(id: string, todo: CreateTodoDto) {
-    const todoToUpdate = this.data.find((todo) => todo.id === Number(id));
-    console.log(todoToUpdate);
+    const todoToUpdate = this.findOne(id);
     if (!todoToUpdate) return new NotFoundException('Todo not found !');
     if (todo.hasOwnProperty('isDone')) {
       todoToUpdate.isDone = todo.isDone;
@@ -38,5 +37,18 @@ export class TodosService {
     const updateTodos = this.data.map((t) => (t.id !== +id ? t : todoToUpdate));
     this.data = [...updateTodos];
     return { updateTodos: 1, todo: todoToUpdate };
+  }
+  deleteTodo(id: string) {
+    const nbOfTodosBeforeDelete = this.data.length;
+    this.data = [...this.data.filter((t) => t.id !== +id)];
+    if (this.data.length < nbOfTodosBeforeDelete) {
+      return {
+        deletedTodos: 1,
+        nbTodos: this.data.length,
+        message: 'one todo was delete !',
+      };
+    } else {
+      return { deletedTodos: 0, message: 'not todo was delete !' };
+    }
   }
 }
